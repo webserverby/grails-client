@@ -12,12 +12,6 @@
             <button type="submit" onclick="upload_file()" class="btn btn-success"><span class="glyphicon glyphicon-ok"></span></button>
         </form>
     </div>
-<b>${message}</b>
-<g:each in="${tweets}" var="tweet">
-    <p>${tweet.from_user_name}</p>
-    <p>${tweet.text}</p>
-    <br/>
-</g:each>
     <div class="divButton">
     <g:link controller="upload" action="create" class="btn btn-success">
         <span class="glyphicon glyphicon-plus"><span class="font-white"> Client</span></span>
