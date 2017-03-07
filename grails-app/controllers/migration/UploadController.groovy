@@ -6,11 +6,7 @@ import com.opencsv.bean.HeaderColumnNameMappingStrategy
 
 class UploadController {
 
-    def clientService
-
-    def geocodingCoordinate = new GeocodingCoordinate()
-
-    def location = new Location()
+    def geocodeService
 
     def index(Integer max) {
         params.max = Math.min(max ?: 5, 50)
@@ -31,15 +27,12 @@ class UploadController {
         List<Client> clientList = csvToBean.parse(strategy, csv)
 
         for(client in clientList){
-
             def clientFind = Client.findByEmail(client.email);
             if (!clientFind) {
-                location.setStreet(client.street)
-                location = geocodingCoordinate.geocoding(location)
-                client.lat = location.getLat()
-                client.lng = location.getLng()
-
-                clientService.save(client)
+                def location = geocodeService.getGeocode(client.street)
+                client.lat = location.lat
+                client.lng = location.lng
+                client.save(flush: true)
                 countNew++
             } else {
                 if (!clientFind.name.equals(client.name) || !clientFind.street.equals(client.street) || !clientFind.zip.equals(client.zip)) {
@@ -47,34 +40,27 @@ class UploadController {
                     clientFind.street = client.street;
                     clientFind.zip = client.zip;
 
-                    location.setStreet(clientFind.street)
-                    location = geocodingCoordinate.geocoding(location)
-                    clientFind.lat = location.getLat()
-                    clientFind.lng = location.getLng()
-
-                    clientService.save(clientFind)
+                    def location = geocodeService.getGeocode(clientFind.street)
+                    clientFind.lat = location.lat
+                    clientFind.lng = location.lng
+                    client.save(flush: true)
                     countUpdate++
                 }
             }
-
         }
-
         render "Импорт " + countNew + " новых клиентов и обновленно " + countUpdate + " клиентов"
     }
 
     def create() {
         def client = new Client()
-        client.properties = params
         [client: client]
     }
 
     def save(Client client) {
-        location.setStreet(client.street)
-        location = geocodingCoordinate.geocoding(location)
-        client.lat = location.getLat()
-        client.lng = location.getLng()
-
-        clientService.save(client)
+        def location = geocodeService.getGeocode(client.street)
+        client.lat = location.lat
+        client.lng = location.lng
+        client.save(flush: true)
         redirect(action: "index")
     }
 
@@ -84,12 +70,10 @@ class UploadController {
     }
 
     def update(Client client) {
-        location.setStreet(client.street)
-        location = geocodingCoordinate.geocoding(location)
-        client.lat = location.getLat()
-        client.lng = location.getLng()
-
-        clientService.update(client)
+        def location = geocodeService.getGeocode(client.street)
+        client.lat = location.lat
+        client.lng = location.lng
+        client.save(flush: true)
         redirect(action: "index")
     }
 
@@ -99,7 +83,7 @@ class UploadController {
 
     def delete() {
         def client = Client.get(params.id)
-        clientService.delete(client)
+        client.delete(flush: true)
         redirect(action: "index")
     }
 
