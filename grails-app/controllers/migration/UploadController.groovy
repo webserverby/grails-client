@@ -13,12 +13,8 @@ class UploadController {
     def location = new Location()
 
     def index(Integer max) {
-        //redirect(action: "list", params: params)
-        //redirect view:"index"
         params.max = Math.min(max ?: 5, 50)
         respond Client.list(params), model: [clientCount: Client.count()]
-        //def clientList = clientService.findAll()
-        //[clientList: clientList]
     }
 
     def uploadFile() {
