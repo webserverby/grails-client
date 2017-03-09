@@ -43,8 +43,12 @@ class UploadController {
                     def location = geocodeService.getGeocode(clientFind.street)
                     clientFind.lat = location.lat
                     clientFind.lng = location.lng
-                    client.save(flush: true)
-                    countUpdate++
+
+                    bindData(clientFind, params)
+                    if (clientFind.isDirty()) {
+                        clientFind.save(flush: true)
+                        countUpdate++
+                    }
                 }
             }
         }
