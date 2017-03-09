@@ -29,22 +29,15 @@ class UploadController {
         for(client in clientList){
             def clientFind = Client.findByEmail(client.email);
             if (!clientFind) {
-                def location = geocodeService.getGeocode(client.street)
-                client.lat = location.lat
-                client.lng = location.lng
+                geocodeService.getGeocode(client)
                 client.save(flush: true)
                 countNew++
             } else {
                 if (!clientFind.name.equals(client.name) || !clientFind.street.equals(client.street) || !clientFind.zip.equals(client.zip)) {
-                    clientFind.name = client.name;
-                    clientFind.street = client.street;
-                    clientFind.zip = client.zip;
+                    def data = [name:client.name, street:client.street, zip:client.zip]
+                    bindData(clientFind, data)
+                    geocodeService.getGeocode(clientFind)
 
-                    def location = geocodeService.getGeocode(clientFind.street)
-                    clientFind.lat = location.lat
-                    clientFind.lng = location.lng
-
-                    bindData(clientFind, params)
                     if (clientFind.isDirty()) {
                         clientFind.save(flush: true)
                         countUpdate++
@@ -61,9 +54,7 @@ class UploadController {
     }
 
     def save(Client client) {
-        def location = geocodeService.getGeocode(client.street)
-        client.lat = location.lat
-        client.lng = location.lng
+        geocodeService.getGeocode(client)
         client.save(flush: true)
         redirect(action: "index")
     }
@@ -74,9 +65,7 @@ class UploadController {
     }
 
     def update(Client client) {
-        def location = geocodeService.getGeocode(client.street)
-        client.lat = location.lat
-        client.lng = location.lng
+        geocodeService.getGeocode(client)
         client.save(flush: true)
         redirect(action: "index")
     }
