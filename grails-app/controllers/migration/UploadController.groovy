@@ -34,9 +34,9 @@ class UploadController {
                 countNew++
             } else {
                 if (!clientFind.name.equals(client.name) || !clientFind.street.equals(client.street) || !clientFind.zip.equals(client.zip)) {
-                    def data = [name:client.name, street:client.street, zip:client.zip]
+                    geocodeService.getGeocode(client)
+                    def data = [name:client.name, street:client.street, zip:client.zip, lat:client.lat, lng:client.lng]
                     bindData(clientFind, data)
-                    geocodeService.getGeocode(clientFind)
 
                     if (clientFind.isDirty()) {
                         clientFind.save(flush: true)
