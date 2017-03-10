@@ -3,7 +3,9 @@ package migration
 import com.opencsv.CSVReader
 import com.opencsv.bean.CsvToBean
 import com.opencsv.bean.HeaderColumnNameMappingStrategy
+import grails.transaction.Transactional
 
+@Transactional(readOnly = true)
 class UploadController {
 
     def geocodeService
@@ -39,6 +41,9 @@ class UploadController {
                     bindData(clientFind, data)
 
                     if (clientFind.isDirty()) {
+                        println clientFind.toString()
+                        println clientFind.dirtyPropertyNames
+                        println clientFind.isDirty()
                         clientFind.save(flush: true)
                         countUpdate++
                     }
@@ -53,6 +58,7 @@ class UploadController {
         [client: client]
     }
 
+    @Transactional
     def save(Client client) {
         geocodeService.getGeocode(client)
         client.save(flush: true)
@@ -64,6 +70,7 @@ class UploadController {
         [client: client]
     }
 
+    @Transactional
     def update(Client client) {
         geocodeService.getGeocode(client)
         client.save(flush: true)
@@ -74,6 +81,7 @@ class UploadController {
         respond Client.findAllByNameLikeOrEmailLikeOrStreetLike("%" + arg + "%", "%" + arg + "%", "%" + arg + "%")
     }
 
+    @Transactional
     def delete() {
         def client = Client.get(params.id)
         client.delete(flush: true)

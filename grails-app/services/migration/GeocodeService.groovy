@@ -1,11 +1,9 @@
 package migration
 
-import grails.transaction.Transactional
 import groovyx.net.http.ContentType
 import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.Method
 
-@Transactional
 class GeocodeService {
 
     def getGeocode(Client client) {
