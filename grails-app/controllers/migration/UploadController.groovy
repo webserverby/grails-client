@@ -41,9 +41,6 @@ class UploadController {
                     bindData(clientFind, data)
 
                     if (clientFind.isDirty()) {
-                        println clientFind.toString()
-                        println clientFind.dirtyPropertyNames
-                        println clientFind.isDirty()
                         clientFind.save(flush: true)
                         countUpdate++
                     }
